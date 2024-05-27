@@ -1,0 +1,492 @@
+#include "X_Ogames.h"
+#include <cstdlib>
+#include <iomanip>
+#include <iostream>
+using namespace std;
+
+// Set the board
+X_O_Board::X_O_Board () {
+    n_rows = n_cols = 3;
+    board = new char*[n_rows];
+    for (int i = 0; i < n_rows; i++) {
+        board [i] = new char[n_cols];
+        for (int j = 0; j < n_cols; j++)
+            board[i][j] = 0;
+    }
+}
+
+// Return true  if move is valid and put it on board
+// within board boundaries in empty cell
+// Return false otherwise
+bool X_O_Board::update_board (int x, int y, char mark){
+    // Only update if move is valid
+    if (!(x < 0 || x > 2 || y < 0 || y > 2) && (board[x][y] == 0)) {
+        board[x][y] = toupper(mark);
+        n_moves++;
+        return true;
+    }
+    else
+        return false;
+}
+
+// Display the board and the pieces on it
+void X_O_Board::display_board() {
+    for (int i: {0,1,2}) {
+        cout << "\n| ";
+        for (int j: {0,1,2}) {
+            cout << "(" << i << "," << j << ")";
+            cout << setw(2) << board [i][j] << " |";
+        }
+        cout << "\n-----------------------------";
+    }
+    cout << endl;
+}
+
+// Returns true if there is any winner
+// either X or O
+// Written in a complex way. DO NOT DO LIKE THIS.
+bool X_O_Board::is_winner() {
+    char row_win[3], col_win[3], diag_win[2];
+    for (int i:{0,1,2}) {
+        row_win[i] = board[i][0] & board[i][1] & board[i][2];
+        col_win[i] = board[0][i] & board[1][i] & board[2][i];
+    }
+    diag_win[0] = board[0][0] & board[1][1] & board[2][2];
+    diag_win[1] = board[2][0] & board[1][1] & board[0][2];
+
+    for (int i:{0,1,2}) {
+        if ( (row_win[i] && (row_win[i] == board[i][0])) ||
+             (col_win[i] && (col_win[i] == board[0][i])) )
+        {return true;}
+    }
+    if ((diag_win[0] && diag_win[0] == board[1][1]) ||
+        (diag_win[1] && diag_win[1] == board[1][1]))
+    {return true;}
+    return false;
+}
+
+// Return true if 9 moves are done and no winner
+bool X_O_Board::is_draw() {
+    return (n_moves == 9 && !is_winner());
+}
+
+bool X_O_Board::game_is_over () {
+    return n_moves >= 9;
+}
+
+//=====================================================/
+
+Pyramic::Pyramic() {
+    n_rows=3 , n_cols=5;
+    board = new char*[n_rows];
+    for (int i = 0; i < n_rows; i++) {
+        board [i] = new char[n_cols];
+        for (int j = 0; j < n_cols; j++)
+            board[i][j] = ' ';
+    }
+}
+bool Pyramic::update_board(int x, int y, char symbol) {
+    if ( ((x==0&&y==0) || (x==0&&y==1) || (x==0&&y==3)
+          || (x==0 && y==4) || (x==1&&y==0) || (x==1&&y==4)) && board[x][y]!=' ' )
+    {
+        return false;
+    }
+    board[x][y] = toupper(symbol);
+    n_moves++;
+    return true;
+}
+
+void Pyramic::display_board() {
+    for (int i = 0; i <3 ; ++i) {
+        cout << "\n| ";
+        for (int j = 0; j <5 ; ++j) {
+            if (i==0 &&( j==0|| j==1 || j==3 || j==4 ))
+            {
+                cout<<"       ";
+                continue;
+            }
+            if (i==1 &&( j==0 || j==4  )) {
+                cout<<"      ";
+                continue;
+            }
+            cout << "(" << i << "," << j << ")";
+            cout << setw(2)<<board[i][j]<<"  ";
+        }
+        cout << "\n------------------------------------------------";
+    }
+    cout<<"\n";
+}
+
+bool Pyramic::is_winner() {
+    if ((board[1][1]==board[1][2]) &&(board[1][2] ==board[1][3]) && board[1][3]!=' '){
+        return true;
+    }
+    else if ((board[2][0]==board[2][1]) &&(board[2][0] ==board[2][2])&&board[2][2]!=' '){
+        return true;
+    }
+    else if ((board[2][1]==board[2][2]) &&(board[2][1] ==board[2][3])&&board[2][3]!=' '){
+        return true;
+    }
+    else if ((board[2][2]==board[2][3]) &&(board[2][2] ==board[2][3])&&board[2][2]!=' '){
+        return true;
+    }
+    else if ((board[0][2]==board[1][1]) &&(board[0][2] ==board[2][0])&&board[0][2]!=' '){
+        return true;
+    }
+    else if ((board[0][2]==board[1][3]) &&(board[0][2] ==board[2][4])&&board[2][4]!=' '){
+        return true;
+    }
+    else if((board[0][2]==board[1][2]) &&(board[0][2] ==board[2][2])&&board[2][2]!=' ')
+    {
+
+    }
+    else
+        return false;
+}
+bool Pyramic::is_draw() {
+    return (n_moves == 9 &&!is_winner()) ;
+}
+bool Pyramic::game_is_over() {
+    return n_moves==9;
+}
+//=====================================================/
+FourInARow::FourInARow() {
+    n_rows = 6;
+    n_cols = 7;
+    board = new char*[n_rows];
+    for (int i = 0; i < n_rows; ++i) {
+        board[i] = new char[n_cols];
+        for (int j = 0; j < n_cols; ++j) {
+            board[i][j] = ' ';
+        }
+    }
+}
+void FourInARow::display_board() {
+    for (int i = 0; i <n_rows ; ++i) {
+        cout << "\n| ";
+        for (int j = 0; j <n_cols ; ++j) {
+            cout << "(" << i << "," << j << ")";
+            cout << setw(2)<<board[i][j]<<" |";
+        }
+        cout << "\n------------------------------------------------";
+    }
+    cout<<"\n";
+}
+bool FourInARow::update_board(int x, int y, char symbol) {
+    if ( board[0][y] != ' ') {
+        return false;
+    }
+    for (int i = 0; i <n_rows ; ++i) {
+        if (board[i][y]!=' '){
+            board[--i][y]=toupper(symbol);
+            n_moves++;
+            return true;
+        }
+    }
+    if(board[5][y]==' ') {
+        board[5][y] = toupper(symbol);
+        n_moves++;
+        return true;
+    }
+    return false;
+
+}
+
+bool FourInARow::is_winner() {
+    for (int i = 0; i < n_rows; ++i) {
+        for (int j = 0; j <= n_cols - 4; ++j) {
+            if (board[i][j] != ' ' &&
+                board[i][j] == board[i][j + 1] &&
+                board[i][j] == board[i][j + 2] &&
+                board[i][j] == board[i][j + 3]) {
+                return true;
+            }
+        }
+    }
+
+    for (int i = 0; i <= n_rows - 4; ++i) {
+        for (int j = 0; j < n_cols; ++j) {
+            if (board[i][j] != ' ' &&
+                board[i][j] == board[i + 1][j] &&
+                board[i][j] == board[i + 2][j] &&
+                board[i][j] == board[i + 3][j]) {
+                return true;
+            }
+        }
+    }
+
+    for (int i = 3; i < n_rows; ++i) {
+        for (int j = 0; j <= n_cols - 4; ++j) {
+            if (board[i][j] != ' ' &&
+                board[i][j] == board[i - 1][j + 1] &&
+                board[i][j] == board[i - 2][j + 2] &&
+                board[i][j] == board[i - 3][j + 3]) {
+                return true;
+            }
+        }
+    }
+
+    for (int i = 0; i <= n_rows - 4; ++i) {
+        for (int j = 0; j <= n_cols - 4; ++j) {
+            if (board[i][j] != ' ' &&
+                board[i][j] == board[i + 1][j + 1] &&
+                board[i][j] == board[i + 2][j + 2] &&
+                board[i][j] == board[i + 3][j + 3]) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+
+}
+bool FourInARow::is_draw() {
+    return n_moves == 42 && !is_winner();
+}
+
+bool FourInARow::game_is_over() {
+    return n_moves==42;
+}
+//=====================================================/
+TicTacToe5x5::TicTacToe5x5() {
+    n_rows = 5;
+    n_cols = 5;
+    n_moves=0;
+    board = new char*[n_rows];
+    for (int i = 0; i < n_rows; ++i) {
+        board[i] = new char[n_cols];
+        for (int j = 0; j < n_cols; ++j) {
+            board[i][j] = ' ';
+        }
+    }
+}
+bool TicTacToe5x5::update_board(int x, int y, char symbol) {
+    if (x < 0 || x >= n_rows || y < 0 || y >= n_cols || board[x][y] != ' ') {
+        return false;
+    }
+    board[x][y] = toupper(symbol);
+    n_moves++;
+    return true;
+}
+void TicTacToe5x5::display_board() {
+    for (int i = 0; i <n_rows ; ++i) {
+        cout << "\n| ";
+        for (int j = 0; j <n_cols ; ++j) {
+            cout << "(" << i << "," << j << ")";
+            cout << setw(2)<<board[i][j]<<" |";
+        }
+        cout << "\n------------------------------------------------";
+    }
+    cout<<"\n";
+}
+
+int TicTacToe5x5::count(const char &mark) {
+    int c=0;
+    for (int i = 0; i <n_rows ; ++i) {
+        for (int j = 0; j <=n_cols-3 ; ++j) {
+            if ( board[i][j] == mark &&
+                 board[i][j + 1] == mark &&
+                 board[i][j + 2] == mark){
+                c++;
+            }
+        }
+
+    }
+    for (int i = 0; i <=n_rows-3 ; ++i) {
+        for (int j = 0; j <=n_cols ; ++j) {
+            if ( board[i][j] == mark &&
+                 board[i+1][j] == mark &&
+                 board[i+2][j] == mark){
+                c++;
+            }
+        }
+
+    }
+    for (int i = 0; i <=n_rows-3 ; ++i) {
+        for (int j = 0; j <=n_cols-3 ; ++j) {
+            if ( board[i][j] == mark &&
+                 board[i+1][j+1] == mark &&
+                 board[i+2][j+2] == mark){
+                c++;
+            }
+        }
+
+    }
+    for (int i = n_rows-1; i >=2 ; --i) {
+        for (int j = n_cols; j >=2 ; --j) {
+            if ( board[i][j] == mark &&
+                 board[i-1][j-1] == mark &&
+                 board[i-2][j-2] == mark){
+                c++;
+            }
+        }
+
+    }
+    return c;
+}
+bool TicTacToe5x5::is_winner() {
+    int count_x= count('X') ;
+    int count_o=count('O');
+    if (n_moves < 24) {
+        return false;
+    }
+    if (count_x>count_o) {cout<<count_o<<count_x;return true;}
+    else
+        return false;
+
+}
+bool TicTacToe5x5::is_draw() {
+    return (n_moves == 24 )&&(!is_winner()) ;
+}
+bool TicTacToe5x5::game_is_over() {
+    return  n_moves==24 ;
+}
+//=====================================================/
+Player::Player(char symbol): symbol(symbol){}
+Player::Player(int order, char symbol) : symbol(symbol){
+    cout << "Welcome player " << order << "\n";
+    cout << "Please enter your name: ";
+    cin >> name;
+
+}
+
+void Player::get_move(int &x, int &y) {
+    cout << to_String() << " enter your move (row and column) separated by spaces: ";
+    cin >> x >> y;
+}
+
+string Player::to_String() {
+    return "Player: " + name ;
+}
+
+char Player::get_symbol() {
+    return symbol;
+}
+//=======================================================/
+RandomPlayer::RandomPlayer(char symbol, int dimension1,int dimension2) : Player(symbol), dimension1(dimension1),dimension2(dimension2) {
+    this->name = "Random Computer Player";
+}
+
+void RandomPlayer::get_move(int &x, int &y) {
+    x = rand() % dimension1;
+    y = rand() % dimension2;
+}
+//=======================================/
+
+GameManager::GameManager(Board* bPtr, Player* playerPtr[2] ) {
+    boardPtr = bPtr;
+    players[0] = playerPtr[0];
+    players[1] = playerPtr[1];
+}
+void GameManager::run(){
+    int x, y;
+    boardPtr->display_board();
+    while (!boardPtr->game_is_over()) {
+        for (int i:{0,1}) {
+            players[i]->get_move(x, y);
+            while (!boardPtr->update_board (x, y, players[i]->get_symbol())){
+                players[i]->get_move(x, y);
+            }
+            boardPtr->display_board();
+            if (boardPtr->is_winner()){
+                cout  << players[i]->to_String() << " wins\n";
+                return;
+            }
+            if (boardPtr->is_draw()){
+                cout << "Draw!\n";
+                return;
+            }
+        }
+    }
+}
+void X_O_APP(){
+    int choice;
+    cout<<"Hello User ! \n";
+    cout<<"Take a look at the menu of games: \n";
+    cout<<"1- Traditional X-O Game .\n";
+    cout<<"2- Pyramid Tic-Tac-Toe Game.\n";
+    cout<<"3- Four In A Row Tic-Tac-Toe Game.\n";
+    cout<<"4- Tic-Tac-Toe 5*5 Game.\n";
+    cout<<"5- Exit The Area Of Play.\n";
+    cout<<"Enter Your Choice: \n";
+    cin>>choice;
+    switch (choice) {
+        case 1:{
+            Player* players[2];
+            players[0] = new Player (1, 'X');
+            cout << "Welcome to FCAI X-O Game. :)\n";
+            cout << "Press 1 if you want to play with computer: ";
+            cin >> choice;
+            if (choice != 1)
+                players[1] = new Player (2, 'O');
+            else
+                //Player pointer points to child
+                players[1] = new RandomPlayer ('O', 3,3);
+            GameManager x_o_game (new X_O_Board(), players);
+            x_o_game.run();
+            system ("pause");
+            break;
+        }
+        case 2:{
+            Player* players[2];
+            players[0] = new Player (1, 'X');
+            cout << "Welcome to FCAI X-O Game. :)\n";
+            cout << "Press 1 if you want to play with computer: ";
+            cin >> choice;
+            if (choice != 1)
+                players[1] = new Player (2, 'O');
+            else
+                //Player pointer points to child
+                players[1] = new RandomPlayer ('O', 3,5);
+            GameManager x_o_game (new Pyramic(), players);
+            x_o_game.run();
+            system ("pause");
+            break;
+        }
+        case 3:{
+            Player* players[2];
+            players[0] = new Player (1, 'X');
+            cout << "Welcome to FCAI X-O Game. :)\n";
+            cout << "Press 1 if you want to play with computer: ";
+            cin >> choice;
+            if (choice != 1)
+                players[1] = new Player (2, 'O');
+            else
+                //Player pointer points to child
+                players[1] = new RandomPlayer ('O', 7,6);
+            GameManager x_o_game (new FourInARow(), players);
+            x_o_game.run();
+            system ("pause");
+            break;
+        }
+        case 4:{
+            Player* players[2];
+            players[0] = new Player (1, 'X');
+            cout << "Welcome to FCAI X-O Game.)\n";
+            cout << "Press 1 if you want to play with computer: ";
+            cin >> choice;
+            if (choice != 1)
+                players[1] = new Player (2, 'O');
+            else
+                //Player pointer points to child
+                players[1] = new RandomPlayer ('O', 5,5);
+            GameManager x_o_game (new TicTacToe5x5(), players);
+            x_o_game.run();
+            system ("pause");
+            break;
+        }
+        case 5:{
+            cout<<"Bye Bye User!\n";
+            break;
+        }default:{
+            cout<<"InValid Choice \n";
+            break;
+        }
+
+    }
+
+}
+int main(){
+    X_O_APP();
+
+}
